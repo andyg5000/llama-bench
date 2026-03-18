@@ -366,14 +366,14 @@ def run_evaluation(args):
     if coding_file.exists():
         print("\n=== CODING PROFILE ===")
         results["profiles"]["coding"] = run_prompt_suite(
-            host, port, coding_file, max_tokens=2000
+            host, port, coding_file
         )
 
     # --- Agentic profile ---
     agentic_file = prompts_dir / "agentic.jsonl"
     if agentic_file.exists():
         print("\n=== AGENTIC PROFILE ===")
-        agentic = run_prompt_suite(host, port, agentic_file, max_tokens=2000)
+        agentic = run_prompt_suite(host, port, agentic_file)
 
         # Concurrent throughput test
         print("\n--- Concurrent load ---")
@@ -385,7 +385,7 @@ def run_evaluation(args):
     if speed_file.exists():
         print("\n=== SPEED PROFILE ===")
         results["profiles"]["speed"] = run_prompt_suite(
-            host, port, speed_file, max_tokens=2000
+            host, port, speed_file
         )
 
     # --- Context profile ---
