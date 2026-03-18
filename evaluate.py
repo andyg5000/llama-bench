@@ -133,7 +133,7 @@ def grade(score: float) -> str:
 # ---------------------------------------------------------------------------
 
 def run_prompt_suite(host: str, port: int, prompts_file: Path,
-                     max_tokens: int = 2000) -> dict:
+                     max_tokens: int = 4000) -> dict:
     """Run a JSONL prompt suite and return results."""
     results = []
     correct = 0
@@ -150,14 +150,12 @@ def run_prompt_suite(host: str, port: int, prompts_file: Path,
             test_id = test["id"]
             print(f"  [{test_id}] ", end="", flush=True)
 
-            # For non-thinking prompts, append /no_think to save tokens
+            # For non-thinking prompts, append /no_think to reduce overhead
             prompt = test["prompt"]
-            tok_limit = max_tokens
             if test.get("thinking") is False:
                 prompt = prompt + " /no_think"
-                tok_limit = min(max_tokens, 1000)
 
-            resp = query_server(host, port, prompt, tok_limit)
+            resp = query_server(host, port, prompt, max_tokens)
             if "error" in resp:
                 print(f"ERROR: {resp['error']}")
                 results.append({"id": test_id, "error": resp["error"]})
@@ -234,7 +232,7 @@ def run_context_suite(host: str, port: int, prompts_file: Path) -> dict:
                     f"{filler[insert_pos:]}\n\n"
                     f"Question: {test['question']} /no_think"
                 )
-                max_tok = 200
+                max_tok = 500
             elif test.get("prompt_type") == "generation":
                 prompt = test["prompt"]
                 max_tok = test.get("max_tokens", 2000)
