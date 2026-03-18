@@ -1,15 +1,25 @@
-# llama-bench: Local Inference Optimization Framework
+# llama-bench: Autoresearch for Local LLM Inference
 
-Inspired by [karpathy/autoresearch](https://github.com/karpathy/autoresearch).
+Following [karpathy/autoresearch](https://github.com/karpathy/autoresearch) — an LLM-driven experiment loop that automatically finds the best llama-server configuration for your model + GPU.
 
-Find the best llama-server configuration for your model + GPU combination by testing across real use-case profiles.
+## How it works
 
-## What it answers
+1. Run a seed experiment to establish a baseline
+2. An LLM analyzes the results and proposes the next config to try
+3. The experiment runs, gets scored, and is committed to git
+4. If the score improved: keep the commit. If not: discard it.
+5. Repeat until convergence or budget exhausted
 
-1. **Is this model+config good for local coding?** Code comprehension, editing, generation, debugging with realistic context
-2. **Is this model+config good for agentic use (OpenClaw etc)?** Tool calling, structured output, multi-turn, concurrent requests
-3. **Is this model fast and accurate?** Quick accuracy checks + generation/prompt processing speed
-4. **What settings work best given my resources?** Compare configs side-by-side with letter grades per profile
+Git history becomes the research memory. `results.tsv` is the append-only experiment log the LLM reads to decide what to try next.
+
+## What it optimizes for
+
+1. **Local coding assistant** — prompt ingestion speed, code generation quality
+2. **Agentic use (OpenClaw etc)** — tool calling, structured output, concurrent throughput
+3. **Speed and accuracy** — generation t/s, prompt processing t/s, correctness
+4. **Resource efficiency** — best performance within your memory budget
+
+Each experiment produces a score card with letter grades per profile and a composite score that drives the keep/discard decision.
 
 ## Setup
 
@@ -31,8 +41,25 @@ vi bench.env  # set your server IP, model path, GPU name
 
 ## Usage
 
+### Autoresearch (recommended)
+
 ```bash
-# Run all experiments (single run)
+# Start the LLM-driven search with a seed experiment
+./run_auto.sh --seed experiments/001_baseline_f16_262k.env --memory 128GB
+
+# Custom budget (default 20)
+./run_auto.sh --seed experiments/001_baseline_f16_262k.env --budget 30
+
+# Use a different LLM for research decisions
+./run_auto.sh --research-host 10.0.0.5 --research-port 8080 --seed experiments/001_baseline_f16_262k.env
+```
+
+The researcher creates a git branch (`autoresearch/{gpu}`) and commits each experiment. Improved configs are kept, degraded ones are discarded. The branch history is the research log.
+
+### Manual mode
+
+```bash
+# Run all predefined experiments
 ./run_experiments.sh
 
 # Run with 3 repetitions for mean/stddev
@@ -40,94 +67,57 @@ vi bench.env  # set your server IP, model path, GPU name
 
 # Run a single experiment
 ./run_single.sh experiments/001_baseline_f16_262k.env
-
-# Compare all results for a GPU/model
-python3 evaluate.py --summarize-all output/gb10/Qwen3.5-35B-A3B-Q8_0/results
-
-# Aggregate multi-run stats
-python3 evaluate.py --summarize-runs output/gb10/Qwen3.5-35B-A3B-Q8_0/results 001_baseline_f16_262k
 ```
 
-## Output
+### View results
 
-Results are organized by GPU and model:
+```bash
+# Score card for a single result
+python3 evaluate.py --summarize output/gb10/Qwen3.5-35B-A3B-Q8_0/results/001_baseline_f16_262k.json
+
+# Comparison table
+python3 evaluate.py --summarize-all output/gb10/Qwen3.5-35B-A3B-Q8_0/results
+
+# Multi-run aggregation
+python3 evaluate.py --summarize-runs output/gb10/Qwen3.5-35B-A3B-Q8_0/results 001_baseline_f16_262k
+
+# Raw experiment log
+cat output/gb10/Qwen3.5-35B-A3B-Q8_0/results.tsv
+```
+
+## Output structure
 
 ```
 output/
   {gpu}/
     {model}/
-      results/       # JSON result files (one per experiment per run)
-      experiments/   # Copies of experiment .env files used
+      results/       # JSON result files
+      experiments/   # .env files (kept experiments only in git)
+      results.tsv    # Append-only experiment log (LLM reads this)
 ```
 
-### Score Card
+## Key files
 
-Each experiment produces a score card:
+| File | Role |
+|---|---|
+| `program.md` | Research directions and constraints (human-written) |
+| `search_space.json` | Valid parameter ranges and constraints |
+| `researcher.py` | Autoresearch loop — LLM proposes, run, score, keep/discard |
+| `evaluate.py` | Evaluation harness — runs test suites, produces score cards |
+| `run_single.sh` | Runs one experiment (start server, evaluate, stop) |
+| `run_auto.sh` | Entry point for autoresearch mode |
+| `run_experiments.sh` | Manual mode — run predefined experiments |
+| `eval_prompts/` | Test suites (coding, agentic, speed, long_context) |
+| `experiments/` | Predefined experiment configs |
 
-```
-=================================================================
-  SCORE CARD: 002_q8_cache_262k
-  GPU: gb10 | Model: Qwen3.5-35B-A3B-Q8_0
-  Config: ctx=262144 cache=q8_0/q8_0 batch=2048/512 par=1
-=================================================================
-  Coding:    A  (acc=88% gen=50 t/s avg=12.3s)
-  Agentic:   B+ (acc=75% conc=100% wall=8.2s)
-  Speed:     A  (acc=92% gen=50 t/s)
-  Context:   A  (needle=4/4 pp=1923 t/s)
-=================================================================
-```
-
-### Comparison Table
-
-`--summarize-all` produces a side-by-side comparison:
-
-```
-Experiment                      Ctx  Cache    Batch      Par Coding Agent  Speed    Ctx  Gen t/s  PP t/s
---------------------------------------------------------------------------------------------------------------
-001_baseline_f16_262k        262144  f16/f16  2048/512     1      A     B+     A      A    49.9  1930.0
-002_q8_cache_262k            262144  q8/q8    2048/512     1      A     B+     A      A    50.1  1923.0
-```
-
-## Evaluation Profiles
-
-### Coding
-Tests code comprehension, editing, generation, debugging, and optimization. Includes thinking-enabled prompts to measure the cost of chain-of-thought on coding tasks.
-
-### Agentic
-Tests tool/function calling, structured JSON output, multi-turn conversations, and system prompt adherence. Includes a concurrent load test (4 parallel requests) to measure throughput under multi-agent use.
-
-### Speed
-Quick accuracy sanity checks (math, reasoning, knowledge, instructions). Verifies a config doesn't break basic model capabilities.
-
-### Context
-Needle-in-a-haystack tests at 4 context lengths (~500, ~4k, ~20k, ~80k tokens) plus a generation speed benchmark. Measures prompt processing speed scaling and retrieval accuracy.
-
-## Adding Experiments
-
-Create a new `.env` file in `experiments/`:
-
-```bash
-# experiments/016_my_test.env
-CTX_SIZE=262144
-CACHE_TYPE_K=q8_0
-CACHE_TYPE_V=q8_0
-BATCH_SIZE=4096
-UBATCH_SIZE=1024
-PARALLEL=1
-GPU_LAYERS=100
-EXTRA_FLAGS=""
-```
-
-## Testing a Different Model/GPU
-
-Just change the env vars:
+## Testing a different model/GPU
 
 ```bash
 BENCH_GPU=4090 \
 BENCH_MODEL=Llama-3-70B-Q4 \
 BENCH_REMOTE_HOST=10.0.0.5 \
 BENCH_MODEL_PATH=/models/llama3-70b-q4.gguf \
-./run_experiments.sh
+./run_auto.sh --seed experiments/001_baseline_f16_262k.env --memory 24GB
 ```
 
-Results go to `output/4090/Llama-3-70B-Q4/`.
+Results go to `output/4090/Llama-3-70B-Q4/`. Each GPU gets its own autoresearch branch.

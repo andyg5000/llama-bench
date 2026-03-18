@@ -1,0 +1,60 @@
+{
+  "description": "Valid parameter ranges for llama-server config search",
+  "parameters": {
+    "ctx_size": {
+      "type": "choice",
+      "values": [32768, 65536, 131072, 262144, 524288, 1048576],
+      "description": "Context window size in tokens"
+    },
+    "cache_type_k": {
+      "type": "choice",
+      "values": ["f16", "q8_0", "q4_0"],
+      "description": "KV cache quantization for keys. Avoid q5_0, iq4_nl — no optimized CUDA kernels on most GPUs."
+    },
+    "cache_type_v": {
+      "type": "choice",
+      "values": ["f16", "q8_0", "q4_0"],
+      "description": "KV cache quantization for values. Avoid q5_0, iq4_nl — no optimized CUDA kernels on most GPUs."
+    },
+    "batch_size": {
+      "type": "choice",
+      "values": [512, 1024, 2048, 4096, 8192, 16384],
+      "description": "Batch size for prompt processing"
+    },
+    "ubatch_size": {
+      "type": "choice",
+      "values": [128, 256, 512, 1024, 2048, 4096],
+      "description": "Micro-batch size (must be <= batch_size)"
+    },
+    "parallel": {
+      "type": "choice",
+      "values": [1, 2, 4, 8],
+      "description": "Number of parallel request slots"
+    },
+    "gpu_layers": {
+      "type": "choice",
+      "values": [100],
+      "description": "Number of layers offloaded to GPU. 100 = all layers."
+    },
+    "threads": {
+      "type": "choice",
+      "values": [0, 4, 8, 12, 16, 20],
+      "description": "CPU threads (0 = auto)"
+    },
+    "extra_flags": {
+      "type": "optional",
+      "values": ["", "--swa-full", "--no-mmap"],
+      "description": "Additional llama-server flags to test"
+    }
+  },
+  "constraints": [
+    "ubatch_size must be <= batch_size",
+    "Higher ctx_size + f16 cache uses more memory — may OOM on smaller GPUs",
+    "parallel > 1 multiplies KV cache memory by the number of slots",
+    "cache_type_k and cache_type_v should usually match (mixed is rarely beneficial)"
+  ],
+  "budget": {
+    "max_experiments": 20,
+    "description": "Maximum number of experiments before stopping"
+  }
+}
