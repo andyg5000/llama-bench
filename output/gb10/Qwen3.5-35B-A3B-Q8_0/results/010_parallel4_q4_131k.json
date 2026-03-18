@@ -1,0 +1,161 @@
+{
+  "experiment": "010_parallel4_q4_131k",
+  "config": {
+    "ctx_size": "131072",
+    "cache_k": "q4_0",
+    "cache_v": "q4_0",
+    "batch": "4096",
+    "ubatch": "1024",
+    "parallel": "4"
+  },
+  "accuracy_tests": [
+    {
+      "id": "math_1",
+      "prompt": "What is 347 * 283? Only respond with the number.",
+      "expected": "98201",
+      "response": "98201",
+      "correct": true,
+      "elapsed": 14.168,
+      "completion_tokens": 698,
+      "predicted_n": 698,
+      "server_gen_tps": 50.36
+    },
+    {
+      "id": "math_2",
+      "prompt": "What is the square root of 144? Only respond with the number.",
+      "expected": "12",
+      "response": "12",
+      "correct": true,
+      "elapsed": 5.646,
+      "completion_tokens": 275,
+      "predicted_n": 275,
+      "server_gen_tps": 50.25
+    },
+    {
+      "id": "math_3",
+      "prompt": "If a train travels at 60 mph for 2.5 hours, how many miles does it travel? Only ",
+      "expected": "150",
+      "response": "150",
+      "correct": true,
+      "elapsed": 5.341,
+      "completion_tokens": 261,
+      "predicted_n": 261,
+      "server_gen_tps": 50.23
+    },
+    {
+      "id": "reason_1",
+      "prompt": "Alice is taller than Bob. Bob is taller than Charlie. Who is the shortest? Only ",
+      "expected": "Charlie",
+      "response": "Charlie",
+      "correct": true,
+      "elapsed": 4.906,
+      "completion_tokens": 239,
+      "predicted_n": 239,
+      "server_gen_tps": 50.16
+    },
+    {
+      "id": "reason_2",
+      "prompt": "I have 3 apples. I eat 1 and give away 1. How many do I have left? Only respond ",
+      "expected": "1",
+      "response": "1",
+      "correct": true,
+      "elapsed": 4.737,
+      "completion_tokens": 230,
+      "predicted_n": 230,
+      "server_gen_tps": 50.13
+    },
+    {
+      "id": "code_1",
+      "prompt": "Write a Python function that returns the factorial of n. Only output the functio",
+      "expected": "def factorial",
+      "response": "",
+      "correct": false,
+      "elapsed": 40.066,
+      "completion_tokens": 2000,
+      "predicted_n": 2000,
+      "server_gen_tps": 50.12
+    },
+    {
+      "id": "knowledge_1",
+      "prompt": "What is the capital of France? Only respond with the city name.",
+      "expected": "Paris",
+      "response": "Paris",
+      "correct": true,
+      "elapsed": 3.664,
+      "completion_tokens": 177,
+      "predicted_n": 177,
+      "server_gen_tps": 50.53
+    },
+    {
+      "id": "knowledge_2",
+      "prompt": "What is the chemical symbol for gold? Only respond with the symbol.",
+      "expected": "Au",
+      "response": "Au",
+      "correct": true,
+      "elapsed": 3.79,
+      "completion_tokens": 183,
+      "predicted_n": 183,
+      "server_gen_tps": 50.3
+    },
+    {
+      "id": "long_ctx_1",
+      "prompt": "Repeat the following list back to me exactly: apple, banana, cherry, date, elder",
+      "expected": "apple, banana, cherry",
+      "response": "apple, banana, cherry, date, elderberry, fig, grape, honeydew, kiwi, lemon, mango, nectarine, orange, papaya, quince, raspberry, strawberry, tangerine, watermelon",
+      "correct": true,
+      "elapsed": 12.706,
+      "completion_tokens": 627,
+      "predicted_n": 627,
+      "server_gen_tps": 50.16
+    },
+    {
+      "id": "instruction_1",
+      "prompt": "Count from 1 to 10, separating each number with a comma. Only output the numbers",
+      "expected": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      "response": "",
+      "correct": false,
+      "elapsed": 40.156,
+      "completion_tokens": 2000,
+      "predicted_n": 2000,
+      "server_gen_tps": 50.0
+    }
+  ],
+  "benchmarks": {
+    "long_context": {
+      "content": "fox",
+      "elapsed": 7.947765542005072,
+      "prompt_tokens": 2046,
+      "completion_tokens": 349,
+      "total_tokens": 2395,
+      "server_prompt_tps": 2271.8339229441904,
+      "server_gen_tps": 49.83641802673203,
+      "server_prompt_ms": 900.594,
+      "server_gen_ms": 7002.911,
+      "predicted_n": 349,
+      "is_correct": true,
+      "test_type": "long_context"
+    },
+    "generation": {
+      "content": "",
+      "elapsed": 40.16617904200393,
+      "prompt_tokens": 28,
+      "completion_tokens": 2000,
+      "total_tokens": 2028,
+      "server_prompt_tps": 217.3963679278244,
+      "server_gen_tps": 50.059212539552405,
+      "server_prompt_ms": 128.797,
+      "server_gen_ms": 39952.686,
+      "predicted_n": 2000,
+      "test_type": "generation_speed"
+    }
+  },
+  "summary": {
+    "accuracy": 0.8,
+    "correct": 8,
+    "total": 10,
+    "generation_tps": 50.06,
+    "avg_gen_tps": 50.22,
+    "prompt_processing_tps": 2271.83
+  },
+  "server_metrics": {}
+}

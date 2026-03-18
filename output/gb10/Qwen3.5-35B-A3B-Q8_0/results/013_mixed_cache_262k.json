@@ -1,0 +1,161 @@
+{
+  "experiment": "013_mixed_cache_262k",
+  "config": {
+    "ctx_size": "262144",
+    "cache_k": "q8_0",
+    "cache_v": "q4_0",
+    "batch": "4096",
+    "ubatch": "1024",
+    "parallel": "1"
+  },
+  "accuracy_tests": [
+    {
+      "id": "math_1",
+      "prompt": "What is 347 * 283? Only respond with the number.",
+      "expected": "98201",
+      "response": "98201",
+      "correct": true,
+      "elapsed": 25.076,
+      "completion_tokens": 564,
+      "predicted_n": 564,
+      "server_gen_tps": 22.83
+    },
+    {
+      "id": "math_2",
+      "prompt": "What is the square root of 144? Only respond with the number.",
+      "expected": "12",
+      "response": "12",
+      "correct": true,
+      "elapsed": 6.157,
+      "completion_tokens": 135,
+      "predicted_n": 135,
+      "server_gen_tps": 22.69
+    },
+    {
+      "id": "math_3",
+      "prompt": "If a train travels at 60 mph for 2.5 hours, how many miles does it travel? Only ",
+      "expected": "150",
+      "response": "150",
+      "correct": true,
+      "elapsed": 11.725,
+      "completion_tokens": 261,
+      "predicted_n": 261,
+      "server_gen_tps": 22.69
+    },
+    {
+      "id": "reason_1",
+      "prompt": "Alice is taller than Bob. Bob is taller than Charlie. Who is the shortest? Only ",
+      "expected": "Charlie",
+      "response": "Charlie",
+      "correct": true,
+      "elapsed": 10.435,
+      "completion_tokens": 242,
+      "predicted_n": 242,
+      "server_gen_tps": 23.67
+    },
+    {
+      "id": "reason_2",
+      "prompt": "I have 3 apples. I eat 1 and give away 1. How many do I have left? Only respond ",
+      "expected": "1",
+      "response": "1",
+      "correct": true,
+      "elapsed": 10.307,
+      "completion_tokens": 230,
+      "predicted_n": 230,
+      "server_gen_tps": 22.81
+    },
+    {
+      "id": "code_1",
+      "prompt": "Write a Python function that returns the factorial of n. Only output the functio",
+      "expected": "def factorial",
+      "response": "",
+      "correct": false,
+      "elapsed": 90.885,
+      "completion_tokens": 2000,
+      "predicted_n": 2000,
+      "server_gen_tps": 22.06
+    },
+    {
+      "id": "knowledge_1",
+      "prompt": "What is the capital of France? Only respond with the city name.",
+      "expected": "Paris",
+      "response": "Paris",
+      "correct": true,
+      "elapsed": 8.063,
+      "completion_tokens": 176,
+      "predicted_n": 176,
+      "server_gen_tps": 22.42
+    },
+    {
+      "id": "knowledge_2",
+      "prompt": "What is the chemical symbol for gold? Only respond with the symbol.",
+      "expected": "Au",
+      "response": "Au",
+      "correct": true,
+      "elapsed": 8.285,
+      "completion_tokens": 183,
+      "predicted_n": 183,
+      "server_gen_tps": 22.63
+    },
+    {
+      "id": "long_ctx_1",
+      "prompt": "Repeat the following list back to me exactly: apple, banana, cherry, date, elder",
+      "expected": "apple, banana, cherry",
+      "response": "",
+      "correct": false,
+      "elapsed": 91.49,
+      "completion_tokens": 2000,
+      "predicted_n": 2000,
+      "server_gen_tps": 21.93
+    },
+    {
+      "id": "instruction_1",
+      "prompt": "Count from 1 to 10, separating each number with a comma. Only output the numbers",
+      "expected": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      "response": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      "correct": true,
+      "elapsed": 75.338,
+      "completion_tokens": 1669,
+      "predicted_n": 1669,
+      "server_gen_tps": 22.23
+    }
+  ],
+  "benchmarks": {
+    "long_context": {
+      "content": "fox",
+      "elapsed": 19.425083375012036,
+      "prompt_tokens": 2046,
+      "completion_tokens": 356,
+      "total_tokens": 2402,
+      "server_prompt_tps": 788.8040712468193,
+      "server_gen_tps": 21.208886261211145,
+      "server_prompt_ms": 2593.8,
+      "server_gen_ms": 16785.417,
+      "predicted_n": 356,
+      "is_correct": true,
+      "test_type": "long_context"
+    },
+    "generation": {
+      "content": "# From Gears to Intelligence: A History of Computing\n\nThe history of computing is not merely a chronicle of technological advancement; it is the story of humanity's quest to extend its own cognitive capabilities. From the mechanical gears of the 19th century to the neural networks of the 21st, the evolution of computing has fundamentally reshaped economics, warfare, communication, and culture. While the journey is continuous, it can be mapped through specific, transformative moments that altered the trajectory of the field. This essay explores the history of computing through five major milestones: the conceptual birth of the computer, the advent of electronic processing, the silicon revolution, the democratization of the personal computer, and the rise of the mobile and intelligent era.\n\n### Milestone 1: The Conceptual Foundation (1830s\u20131840s)\nThe first major milestone in the history of computing was not a machine, but an idea. In the 1830s, the English mathematician Charles Babbage designed the Analytical Engine. While his earlier Difference Engine was a mechanical calculator, the Analytical Engine was a general-purpose machine. It featured an arithmetic logic unit, control flow in the form of conditional branching and loops, and integrated memory.\n\nCrucially, Babbage's work was accompanied by the contributions of Ada Lovelace, a mathematician who wrote the first algorithm intended to be processed by a machine. Lovelace recognized that the engine could manipulate symbols beyond mere numbers, predicting that it could compose music or create graphics if represented appropriately. This era established the theoretical framework of computing: the separation of hardware from software and the concept of a stored program. Although the Analytical Engine was never fully built due to funding and engineering limitations of the Victorian era, it provided the blueprint for all future computers.\n\n### Milestone 2: The Electronic Dawn (1945)\nThe second milestone marked the transition from mechanical to electronic computation. During World War II, the need for rapid ballistics calculations led to the development of the ENIAC (Electronic Numerical Integrator and Computer). Completed in 1945 at the University of Pennsylvania, ENIAC was the first electronic, general-purpose digital computer.\n\nUnlike Babbage's gears, ENIAC utilized 18,000 vacuum tubes to perform calculations. This shift allowed for a massive increase in speed; ENIAC could perform calculations thousands of times faster than electromechanical machines. However, it was also enormous, consuming vast amounts of power and generating significant heat. The significance of this milestone lies in the realization that electricity could be used to switch logic states on and off, creating a binary system that became the foundation of modern digital logic. Furthermore, the work of John von Neumann on the EDVAC architecture, which followed ENIAC, established the \"stored-program\" concept, where instructions and data are stored in the same memory space, a design standard still used today.\n\n### Milestone 3: The Silicon Revolution (1947\u20131960s)\nIf the vacuum tube was the engine of the first electronic computers, the transistor was the spark plug that made them practical. In 1947, at Bell Labs, John Bardeen, Walter Brattain, and William Shockley invented the transistor. This solid-state device could amplify and switch electronic signals without the fragility and heat of vacuum tubes.\n\nThe subsequent development of the Integrated Circuit (IC) by Jack Kilby and Robert Noyce in the late 1950s allowed multiple transistors to be etched onto a single piece of silicon",
+      "elapsed": 90.3601808329986,
+      "prompt_tokens": 28,
+      "completion_tokens": 2000,
+      "total_tokens": 2028,
+      "server_prompt_tps": 159.873927988215,
+      "server_gen_tps": 22.19717123467248,
+      "server_prompt_ms": 175.138,
+      "server_gen_ms": 90101.571,
+      "predicted_n": 2000,
+      "test_type": "generation_speed"
+    }
+  },
+  "summary": {
+    "accuracy": 0.8,
+    "correct": 8,
+    "total": 10,
+    "generation_tps": 22.2,
+    "avg_gen_tps": 22.6,
+    "prompt_processing_tps": 788.8
+  },
+  "server_metrics": {}
+}

@@ -1,0 +1,161 @@
+{
+  "experiment": "012_q5_cache_262k",
+  "config": {
+    "ctx_size": "262144",
+    "cache_k": "q5_0",
+    "cache_v": "q5_0",
+    "batch": "4096",
+    "ubatch": "1024",
+    "parallel": "1"
+  },
+  "accuracy_tests": [
+    {
+      "id": "math_1",
+      "prompt": "What is 347 * 283? Only respond with the number.",
+      "expected": "98201",
+      "response": "98201",
+      "correct": true,
+      "elapsed": 25.303,
+      "completion_tokens": 563,
+      "predicted_n": 563,
+      "server_gen_tps": 22.57
+    },
+    {
+      "id": "math_2",
+      "prompt": "What is the square root of 144? Only respond with the number.",
+      "expected": "12",
+      "response": "12",
+      "correct": true,
+      "elapsed": 9.783,
+      "completion_tokens": 222,
+      "predicted_n": 222,
+      "server_gen_tps": 23.22
+    },
+    {
+      "id": "math_3",
+      "prompt": "If a train travels at 60 mph for 2.5 hours, how many miles does it travel? Only ",
+      "expected": "150",
+      "response": "150",
+      "correct": true,
+      "elapsed": 11.388,
+      "completion_tokens": 259,
+      "predicted_n": 259,
+      "server_gen_tps": 23.21
+    },
+    {
+      "id": "reason_1",
+      "prompt": "Alice is taller than Bob. Bob is taller than Charlie. Who is the shortest? Only ",
+      "expected": "Charlie",
+      "response": "Charlie",
+      "correct": true,
+      "elapsed": 10.889,
+      "completion_tokens": 244,
+      "predicted_n": 244,
+      "server_gen_tps": 22.86
+    },
+    {
+      "id": "reason_2",
+      "prompt": "I have 3 apples. I eat 1 and give away 1. How many do I have left? Only respond ",
+      "expected": "1",
+      "response": "1",
+      "correct": true,
+      "elapsed": 11.92,
+      "completion_tokens": 266,
+      "predicted_n": 266,
+      "server_gen_tps": 22.72
+    },
+    {
+      "id": "code_1",
+      "prompt": "Write a Python function that returns the factorial of n. Only output the functio",
+      "expected": "def factorial",
+      "response": "",
+      "correct": false,
+      "elapsed": 91.464,
+      "completion_tokens": 2000,
+      "predicted_n": 2000,
+      "server_gen_tps": 21.92
+    },
+    {
+      "id": "knowledge_1",
+      "prompt": "What is the capital of France? Only respond with the city name.",
+      "expected": "Paris",
+      "response": "Paris",
+      "correct": true,
+      "elapsed": 8.011,
+      "completion_tokens": 176,
+      "predicted_n": 176,
+      "server_gen_tps": 22.57
+    },
+    {
+      "id": "knowledge_2",
+      "prompt": "What is the chemical symbol for gold? Only respond with the symbol.",
+      "expected": "Au",
+      "response": "Au",
+      "correct": true,
+      "elapsed": 8.093,
+      "completion_tokens": 183,
+      "predicted_n": 183,
+      "server_gen_tps": 23.25
+    },
+    {
+      "id": "long_ctx_1",
+      "prompt": "Repeat the following list back to me exactly: apple, banana, cherry, date, elder",
+      "expected": "apple, banana, cherry",
+      "response": "apple, banana, cherry, date, elderberry, fig, grape, honeydew, kiwi, lemon, mango, nectarine, orange, papaya, quince, raspberry, strawberry, tangerine, watermelon",
+      "correct": true,
+      "elapsed": 23.829,
+      "completion_tokens": 527,
+      "predicted_n": 527,
+      "server_gen_tps": 22.38
+    },
+    {
+      "id": "instruction_1",
+      "prompt": "Count from 1 to 10, separating each number with a comma. Only output the numbers",
+      "expected": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      "response": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      "correct": true,
+      "elapsed": 78.793,
+      "completion_tokens": 1732,
+      "predicted_n": 1732,
+      "server_gen_tps": 22.05
+    }
+  ],
+  "benchmarks": {
+    "long_context": {
+      "content": "fox",
+      "elapsed": 20.323354708001716,
+      "prompt_tokens": 2046,
+      "completion_tokens": 357,
+      "total_tokens": 2403,
+      "server_prompt_tps": 680.905557800096,
+      "server_gen_tps": 20.655617396403976,
+      "server_prompt_ms": 3004.822,
+      "server_gen_ms": 17283.434,
+      "predicted_n": 357,
+      "is_correct": true,
+      "test_type": "long_context"
+    },
+    "generation": {
+      "content": "# From Gears to Global Networks: A History of Computing\n\nThe history of computing is not merely a chronicle of technological advancement; it is a narrative of humanity's relentless pursuit to extend its cognitive capabilities. From the mechanical gears of the 19th century to the silicon chips and cloud networks of the 21st, the evolution of computing has fundamentally reshaped economics, culture, science, and daily life. While the journey is continuous, it can be mapped through distinct eras defined by paradigm shifts. This essay explores the history of computing by examining five major milestones: the conceptual birth of the programmable machine, the advent of electronic digital computing, the invention of the transistor, the rise of the microprocessor, and the creation of the World Wide Web.\n\n### 1. The Conceptual Foundation: Babbage\u2019s Analytical Engine (1837)\nLong before electricity powered the modern world, the theoretical framework for computing was established in the 19th century. The pivotal figure in this era was Charles Babbage, an English mathematician and inventor. In 1822, Babbage designed the Difference Engine, a mechanical calculator intended to tabulate polynomial functions. However, his vision expanded with the Analytical Engine, proposed in 1837.\n\nThe Analytical Engine was revolutionary because it was not merely a calculator; it was a general-purpose machine. It featured an \"mill\" (the CPU) and a \"store\" (memory), and it could be programmed using punched cards\u2014a concept borrowed from the Jacquard loom. This introduced the concept of conditional branching and loops, the bedrock of modern programming. Although Babbage never completed a fully functional version due to funding and engineering limitations of the time, the design was sound. Furthermore, Babbage's collaborator, Ada Lovelace, wrote the first algorithm intended to be processed by the machine, earning her the title of the first computer programmer. This milestone represents the transition from calculation to computation, proving that machines could manipulate symbols according to logical rules.\n\n### 2. The Electronic Dawn: ENIAC (1945)\nWhile Babbage provided the blueprint, the 20th century provided the power. The second major milestone was the completion of the Electronic Numerical Integrator and Computer (ENIAC) in 1945. Developed by John Mauchly and J. Presper Eckert at the University of Pennsylvania, ENIAC was built to calculate artillery firing tables for the U.S. Army during World War II.\n\nENIAC marked the shift from mechanical to electronic computing. It utilized 18,000 vacuum tubes to perform calculations, making it thousands of times faster than any electromechanical machine that preceded it. However, this speed came at a cost: ENIAC was massive, occupying a 1,800-square-foot room, consuming 150 kilowatts of power, and generating immense heat. It was programmed by physically rewiring cables and setting switches, a laborious process. Despite its clunkiness, ENIAC",
+      "elapsed": 91.71141820799676,
+      "prompt_tokens": 28,
+      "completion_tokens": 2000,
+      "total_tokens": 2028,
+      "server_prompt_tps": 151.24343711513947,
+      "server_gen_tps": 21.870517808238624,
+      "server_prompt_ms": 185.132,
+      "server_gen_ms": 91447.309,
+      "predicted_n": 2000,
+      "test_type": "generation_speed"
+    }
+  },
+  "summary": {
+    "accuracy": 0.9,
+    "correct": 9,
+    "total": 10,
+    "generation_tps": 21.87,
+    "avg_gen_tps": 22.68,
+    "prompt_processing_tps": 680.91
+  },
+  "server_metrics": {}
+}

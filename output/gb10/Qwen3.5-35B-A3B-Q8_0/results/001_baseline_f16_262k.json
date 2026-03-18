@@ -1,0 +1,161 @@
+{
+  "experiment": "001_baseline_f16_262k",
+  "config": {
+    "ctx_size": "262144",
+    "cache_k": "f16",
+    "cache_v": "f16",
+    "batch": "2048",
+    "ubatch": "512",
+    "parallel": "1"
+  },
+  "accuracy_tests": [
+    {
+      "id": "math_1",
+      "prompt": "What is 347 * 283? Only respond with the number.",
+      "expected": "98201",
+      "response": "98201",
+      "correct": true,
+      "elapsed": 12.467,
+      "completion_tokens": 608,
+      "predicted_n": 608,
+      "server_gen_tps": 50.2
+    },
+    {
+      "id": "math_2",
+      "prompt": "What is the square root of 144? Only respond with the number.",
+      "expected": "12",
+      "response": "12",
+      "correct": true,
+      "elapsed": 2.324,
+      "completion_tokens": 109,
+      "predicted_n": 109,
+      "server_gen_tps": 50.28
+    },
+    {
+      "id": "math_3",
+      "prompt": "If a train travels at 60 mph for 2.5 hours, how many miles does it travel? Only ",
+      "expected": "150",
+      "response": "150",
+      "correct": true,
+      "elapsed": 5.368,
+      "completion_tokens": 261,
+      "predicted_n": 261,
+      "server_gen_tps": 50.18
+    },
+    {
+      "id": "reason_1",
+      "prompt": "Alice is taller than Bob. Bob is taller than Charlie. Who is the shortest? Only ",
+      "expected": "Charlie",
+      "response": "Charlie",
+      "correct": true,
+      "elapsed": 5.009,
+      "completion_tokens": 243,
+      "predicted_n": 243,
+      "server_gen_tps": 50.13
+    },
+    {
+      "id": "reason_2",
+      "prompt": "I have 3 apples. I eat 1 and give away 1. How many do I have left? Only respond ",
+      "expected": "1",
+      "response": "1",
+      "correct": true,
+      "elapsed": 4.798,
+      "completion_tokens": 231,
+      "predicted_n": 231,
+      "server_gen_tps": 49.98
+    },
+    {
+      "id": "code_1",
+      "prompt": "Write a Python function that returns the factorial of n. Only output the functio",
+      "expected": "def factorial",
+      "response": "",
+      "correct": false,
+      "elapsed": 40.254,
+      "completion_tokens": 2000,
+      "predicted_n": 2000,
+      "server_gen_tps": 49.88
+    },
+    {
+      "id": "knowledge_1",
+      "prompt": "What is the capital of France? Only respond with the city name.",
+      "expected": "Paris",
+      "response": "Paris",
+      "correct": true,
+      "elapsed": 3.687,
+      "completion_tokens": 176,
+      "predicted_n": 176,
+      "server_gen_tps": 50.19
+    },
+    {
+      "id": "knowledge_2",
+      "prompt": "What is the chemical symbol for gold? Only respond with the symbol.",
+      "expected": "Au",
+      "response": "Au",
+      "correct": true,
+      "elapsed": 2.933,
+      "completion_tokens": 141,
+      "predicted_n": 141,
+      "server_gen_tps": 50.58
+    },
+    {
+      "id": "long_ctx_1",
+      "prompt": "Repeat the following list back to me exactly: apple, banana, cherry, date, elder",
+      "expected": "apple, banana, cherry",
+      "response": "apple, banana, cherry, date, elderberry, fig, grape, honeydew, kiwi, lemon, mango, nectarine, orange, papaya, quince, raspberry, strawberry, tangerine, watermelon",
+      "correct": true,
+      "elapsed": 10.39,
+      "completion_tokens": 511,
+      "predicted_n": 511,
+      "server_gen_tps": 50.14
+    },
+    {
+      "id": "instruction_1",
+      "prompt": "Count from 1 to 10, separating each number with a comma. Only output the numbers",
+      "expected": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      "response": "1, 2, 3, 4, 5, 6, 7, 8, 9, 10",
+      "correct": true,
+      "elapsed": 22.877,
+      "completion_tokens": 1133,
+      "predicted_n": 1133,
+      "server_gen_tps": 49.93
+    }
+  ],
+  "benchmarks": {
+    "long_context": {
+      "content": "fox",
+      "elapsed": 7.1163628329959465,
+      "prompt_tokens": 2046,
+      "completion_tokens": 297,
+      "total_tokens": 2343,
+      "server_prompt_tps": 1930.3143317819745,
+      "server_gen_tps": 49.4962300371455,
+      "server_prompt_ms": 1059.931,
+      "server_gen_ms": 6000.457,
+      "predicted_n": 297,
+      "is_correct": true,
+      "test_type": "long_context"
+    },
+    "generation": {
+      "content": "**From Gears to Global Networks: A History of Computing**\n\nThe history of computing is not merely a chronicle of technological advancement; it is a narrative of humanity's relentless pursuit to extend the capabilities of the mind. From the earliest mechanical aids to the complex, interconnected digital ecosystems of the twenty-first century, the evolution of computing has fundamentally reshaped economics, culture, science, and daily life. While the journey spans millennia, five specific milestones stand out as the pillars upon which the modern digital world rests: the conceptualization of the programmable machine, the advent of electronic general-purpose computing, the invention of the transistor, the creation of the microprocessor, and the birth of the World Wide Web.\n\nThe first major milestone in the history of computing is the conceptualization of the **Analytical Engine by Charles Babbage in 1837**. While the abacus and mechanical calculators like Pascal's *Pascaline* existed long before, they were limited to performing specific arithmetic operations. Charles Babbage, an English mathematician, envisioned a machine that could perform any mathematical calculation if given the correct instructions. His design for the Analytical Engine included an arithmetic logic unit, control flow in the form of conditional branching and loops, and integrated memory. Crucially, it utilized punch cards, a concept borrowed from the Jacquard loom, to input data and programs. Although Babbage never completed the machine due to funding issues and engineering limitations of the Victorian era, the design established the fundamental architecture of the modern computer. Furthermore, it was during this period that Ada Lovelace, a mathematician and Babbage's collaborator, wrote the first algorithm intended to be processed by a machine. Her insight that the engine could manipulate symbols beyond mere numbers laid the philosophical groundwork for software and programming.\n\nThe second milestone marks the transition from mechanical to electronic computation: the completion of the **ENIAC (Electronic Numerical Integrator and Computer) in 1945**. Developed by John Mauchly and J. Presper Eckert at the University of Pennsylvania, the ENIAC was the first electronic, general-purpose digital computer. Unlike Babbage's machine, which relied on gears and levers, the ENIAC used 18,000 vacuum tubes to perform calculations. This shift was revolutionary; the ENIAC could calculate artillery firing tables in seconds, a task that would take human computers hours. However, the ENIAC was massive, occupying a 1,800-square-foot room and consuming vast amounts of power. It was also difficult to program, requiring engineers to physically rewire the machine for different tasks. Despite its clunkiness, the ENIAC proved that electronic logic was faster and more reliable than mechanical logic, setting the stage for the rapid miniaturization of computing hardware.\n\nThe third pivotal moment in computing history is the invention of the **transistor in 1947**. For the first few decades of electronic computing, vacuum tubes were the standard for switching and amplifying signals. However, tubes were fragile, generated immense heat, and failed frequently. In 1947, physicists John Bardeen, Walter Brattain, and William Shockley at Bell Labs invented the transistor, a semiconductor device that could amplify or switch electrical signals. The transistor was smaller, more durable, and far more energy-efficient than vacuum tubes. This invention was the catalyst for the integrated circuit (IC) and the subsequent explosion of computing power known as Moore's Law. Without the transistor, the computers of the 1950s and 60s would have remained room-sized beh",
+      "elapsed": 40.28047729100217,
+      "prompt_tokens": 28,
+      "completion_tokens": 2000,
+      "total_tokens": 2028,
+      "server_prompt_tps": 224.59292532285232,
+      "server_gen_tps": 49.92145109277807,
+      "server_prompt_ms": 124.67,
+      "server_gen_ms": 40062.938,
+      "predicted_n": 2000,
+      "test_type": "generation_speed"
+    }
+  },
+  "summary": {
+    "accuracy": 0.9,
+    "correct": 9,
+    "total": 10,
+    "generation_tps": 49.92,
+    "avg_gen_tps": 50.15,
+    "prompt_processing_tps": 1930.31
+  },
+  "server_metrics": {}
+}
