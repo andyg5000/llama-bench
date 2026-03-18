@@ -40,7 +40,7 @@ RUN_NUM="${2:-}"
 source "$EXP_FILE"
 
 # Copy experiment file to output for reproducibility
-cp "$EXP_FILE" "$EXPERIMENTS_DIR/"
+cp "$EXP_FILE" "$EXPERIMENTS_DIR/" 2>/dev/null || true
 
 echo "============================================"
 echo "Experiment: $EXP_NAME"
