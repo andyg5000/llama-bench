@@ -120,6 +120,16 @@ def git_commit(message: str, files: list, cwd=None):
     git_run("commit", "-m", message, cwd=cwd)
 
 
+def git_push(cwd=None):
+    """Push current branch to origin."""
+    branch, _ = git_run("branch", "--show-current", cwd=cwd)
+    out, rc = git_run("push", "-u", "origin", branch, cwd=cwd)
+    if rc != 0:
+        print(f"[!] git push failed (rc={rc})")
+    else:
+        print(f"[*] Pushed to origin/{branch}")
+
+
 def git_reset_last(cwd=None):
     """Discard the last commit (keep files unstaged)."""
     git_run("reset", "HEAD~1", cwd=cwd)
@@ -420,6 +430,7 @@ def main():
                     ],
                     cwd=git_cwd,
                 )
+                git_push(cwd=git_cwd)
                 step = 1
                 print(f"[*] Seed score: {score:.4f}")
         else:
@@ -482,6 +493,7 @@ def main():
                 [str(tsv_path.relative_to(output_root))],
                 cwd=git_cwd,
             )
+            git_push(cwd=git_cwd)
             break
 
         # Write and run experiment
@@ -558,6 +570,8 @@ def main():
                     [str(tsv_path.relative_to(output_root))],
                     cwd=git_cwd,
                 )
+
+            git_push(cwd=git_cwd)
         else:
             no_improve_count += 1
             append_results_tsv(tsv_path, {
@@ -578,6 +592,7 @@ def main():
                 [str(tsv_path.relative_to(output_root))],
                 cwd=git_cwd,
             )
+            git_push(cwd=git_cwd)
             print(f"[!] Experiment failed — logged to results.tsv")
 
         # Cool down
