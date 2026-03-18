@@ -150,7 +150,14 @@ def run_prompt_suite(host: str, port: int, prompts_file: Path,
             test_id = test["id"]
             print(f"  [{test_id}] ", end="", flush=True)
 
-            resp = query_server(host, port, test["prompt"], max_tokens)
+            # For non-thinking prompts, append /no_think to save tokens
+            prompt = test["prompt"]
+            tok_limit = max_tokens
+            if test.get("thinking") is False:
+                prompt = prompt + " /no_think"
+                tok_limit = min(max_tokens, 1000)
+
+            resp = query_server(host, port, prompt, tok_limit)
             if "error" in resp:
                 print(f"ERROR: {resp['error']}")
                 results.append({"id": test_id, "error": resp["error"]})
@@ -225,9 +232,9 @@ def run_context_suite(host: str, port: int, prompts_file: Path) -> dict:
                     f"question at the end.\n\n"
                     f"{filler[:insert_pos]}{test['needle']} "
                     f"{filler[insert_pos:]}\n\n"
-                    f"Question: {test['question']}"
+                    f"Question: {test['question']} /no_think"
                 )
-                max_tok = 100
+                max_tok = 200
             elif test.get("prompt_type") == "generation":
                 prompt = test["prompt"]
                 max_tok = test.get("max_tokens", 2000)
