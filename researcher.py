@@ -324,27 +324,31 @@ def main():
         print("ERROR: No LLM host. Set --research-host or BENCH_REMOTE_HOST")
         sys.exit(1)
 
-    # Output dirs
-    output_dir = script_dir / "output" / gpu / model
+    # Output dirs — output/ is a separate git repo (submodule)
+    output_root = script_dir / "output"
+    output_dir = output_root / gpu / model
     results_dir = output_dir / "results"
     experiments_dir = output_dir / "experiments"
     results_dir.mkdir(parents=True, exist_ok=True)
     experiments_dir.mkdir(parents=True, exist_ok=True)
 
+    # All git operations happen in the output/ submodule
+    git_cwd = str(output_root)
+
     # Results TSV
     tsv_path = output_dir / "results.tsv"
     init_results_tsv(tsv_path)
 
-    # Create research branch
+    # Create research branch in the output submodule
     branch = args.branch or f"autoresearch/{gpu}"
-    current = git_current_branch(cwd=str(script_dir))
+    current = git_current_branch(cwd=git_cwd)
     if current != branch:
-        existing, rc = git_run("branch", "--list", branch, cwd=str(script_dir))
+        existing, rc = git_run("branch", "--list", branch, cwd=git_cwd)
         if existing:
-            git_run("checkout", branch, cwd=str(script_dir))
+            git_run("checkout", branch, cwd=git_cwd)
         else:
-            git_run("checkout", "-b", branch, cwd=str(script_dir))
-        print(f"[*] On branch: {branch}")
+            git_run("checkout", "-b", branch, cwd=git_cwd)
+        print(f"[*] On branch: {branch} (in output/ submodule)")
 
     # Build system prompt
     system_msg = build_system_prompt(script_dir, gpu, model, args.memory)
@@ -406,15 +410,15 @@ def main():
                     "analysis": "seed experiment",
                 })
 
-                # Commit seed
+                # Commit seed in output submodule
                 git_commit(
                     f"autoresearch: seed experiment (score={score:.4f})",
                     [
-                        str(tsv_path.relative_to(script_dir)),
-                        str(results_dir.relative_to(script_dir)),
-                        str(experiments_dir.relative_to(script_dir)),
+                        str(tsv_path.relative_to(output_root)),
+                        str(results_dir.relative_to(output_root)),
+                        str(experiments_dir.relative_to(output_root)),
                     ],
-                    cwd=str(script_dir),
+                    cwd=git_cwd,
                 )
                 step = 1
                 print(f"[*] Seed score: {score:.4f}")
@@ -465,7 +469,7 @@ def main():
             print(f"  {proposal.get('analysis', '')}")
             print(f"{'='*60}\n")
 
-            # Commit convergence
+            # Commit convergence in output submodule
             append_results_tsv(tsv_path, {
                 "step": step + 1,
                 "experiment": "CONVERGED",
@@ -475,8 +479,8 @@ def main():
             })
             git_commit(
                 f"autoresearch: converged (score={best_score:.4f})",
-                [str(tsv_path.relative_to(script_dir))],
-                cwd=str(script_dir),
+                [str(tsv_path.relative_to(output_root))],
+                cwd=git_cwd,
             )
             break
 
@@ -533,26 +537,26 @@ def main():
                 "analysis": proposal.get("analysis", "")[:200],
             })
 
-            # Commit result
+            # Commit result in output submodule
             git_commit(
                 f"autoresearch: {exp_name} score={score:.4f} ({'kept' if improved else 'discarded'})",
                 [
-                    str(tsv_path.relative_to(script_dir)),
-                    str(env_file.relative_to(script_dir)),
-                    str(result_file.relative_to(script_dir)),
+                    str(tsv_path.relative_to(output_root)),
+                    str(env_file.relative_to(output_root)),
+                    str(result_file.relative_to(output_root)),
                 ],
-                cwd=str(script_dir),
+                cwd=git_cwd,
             )
 
             # If not improved, reset the experiment files (keep tsv updated)
             if not improved:
                 # We want to keep the TSV row but discard the experiment
                 # So we reset the commit but re-add the tsv
-                git_reset_last(cwd=str(script_dir))
+                git_reset_last(cwd=git_cwd)
                 git_commit(
                     f"autoresearch: {exp_name} score={score:.4f} (discarded)",
-                    [str(tsv_path.relative_to(script_dir))],
-                    cwd=str(script_dir),
+                    [str(tsv_path.relative_to(output_root))],
+                    cwd=git_cwd,
                 )
         else:
             no_improve_count += 1
@@ -571,8 +575,8 @@ def main():
             })
             git_commit(
                 f"autoresearch: {exp_name} FAILED",
-                [str(tsv_path.relative_to(script_dir))],
-                cwd=str(script_dir),
+                [str(tsv_path.relative_to(output_root))],
+                cwd=git_cwd,
             )
             print(f"[!] Experiment failed — logged to results.tsv")
 
@@ -584,7 +588,7 @@ def main():
     print(f"\n{'='*60}")
     print(f"  RESEARCH COMPLETE")
     print(f"  Experiments: {step} | Best score: {best_score:.4f}")
-    print(f"  Branch: {branch}")
+    print(f"  Branch: {branch} (in output/ submodule)")
     print(f"  Results: {tsv_path}")
     print(f"{'='*60}\n")
 

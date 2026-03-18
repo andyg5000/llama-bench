@@ -85,15 +85,40 @@ python3 evaluate.py --summarize-runs output/gb10/Qwen3.5-35B-A3B-Q8_0/results 00
 cat output/gb10/Qwen3.5-35B-A3B-Q8_0/results.tsv
 ```
 
-## Output structure
+## Repository structure
+
+This project uses two repos:
+
+- **llama-bench** (this repo) — code, eval prompts, experiment definitions, search space
+- **llama-bench-results** (submodule at `output/`) — all results data, organized by GPU/model
+
+The results repo is a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules). Autoresearch commits/resets happen in the submodule only — the main repo stays clean. Each GPU gets its own branch in the results repo (e.g. `autoresearch/gb10`).
+
+```bash
+# Clone with results
+git clone --recurse-submodules <repo-url>
+
+# Or init submodule after clone
+git submodule update --init
+```
+
+### Results layout
 
 ```
-output/
+output/                          # <- git submodule (llama-bench-results)
   {gpu}/
     {model}/
-      results/       # JSON result files
-      experiments/   # .env files (kept experiments only in git)
-      results.tsv    # Append-only experiment log (LLM reads this)
+      results/                   # JSON result files
+      experiments/               # .env files (kept experiments only in git)
+      results.tsv                # Append-only experiment log (LLM reads this)
+```
+
+### Setup the results repo
+
+```bash
+# Create the results repo on GitHub, then update the submodule URL
+git submodule set-url output https://github.com/YOUR_USER/llama-bench-results.git
+cd output && git remote set-url origin https://github.com/YOUR_USER/llama-bench-results.git
 ```
 
 ## Key files
