@@ -285,6 +285,73 @@ def load_result(path: Path) -> dict:
         return json.load(f)
 
 
+def start_research_server(bench_config: dict, script_dir: Path):
+    """Start llama-server for research LLM queries using baseline config."""
+    remote_user = bench_config.get("BENCH_REMOTE_USER", "root")
+    remote_host = bench_config.get("BENCH_REMOTE_HOST", "")
+    port = bench_config.get("BENCH_SERVER_PORT", "8099")
+    model_path = bench_config.get("BENCH_MODEL_PATH", "")
+    chat_template = bench_config.get("BENCH_CHAT_TEMPLATE", "")
+    llama_server = bench_config.get("BENCH_LLAMA_SERVER", "/usr/local/bin/llama-server")
+    remote = f"{remote_user}@{remote_host}"
+
+    template_flag = ""
+    if chat_template:
+        template_flag = f"--chat-template-file {chat_template}"
+
+    # Upload launcher
+    launcher = f"""#!/bin/bash
+fuser -k {port}/tcp 2>/dev/null || true
+sleep 2
+export CUDA_VISIBLE_DEVICES=0
+exec {llama_server} \\
+  --model {model_path} \\
+  --host 0.0.0.0 --port {port} \\
+  --ctx-size 32768 --parallel 1 \\
+  --cache-type-k q4_0 --cache-type-v q4_0 \\
+  --n-gpu-layers 100 --flash-attn on --jinja \\
+  {template_flag} \\
+  --batch-size 2048 --ubatch-size 512
+"""
+    subprocess.run(
+        ["ssh", remote, "cat > /tmp/llama-research-launch.sh"],
+        input=launcher, text=True, check=True,
+    )
+    subprocess.run(["ssh", remote, "chmod +x /tmp/llama-research-launch.sh"], check=True)
+    subprocess.run(
+        ["ssh", "-f", remote,
+         "nohup /tmp/llama-research-launch.sh > /tmp/llama-research-server.log 2>&1 &"],
+        check=True,
+    )
+
+    # Wait for server
+    print("[*] Starting research LLM server...", end="", flush=True)
+    for i in range(60):
+        time.sleep(5)
+        result = subprocess.run(
+            ["ssh", remote, f"curl -sf http://127.0.0.1:{port}/health 2>/dev/null"],
+            capture_output=True, text=True,
+        )
+        if '"status":"ok"' in result.stdout:
+            print(f" ready ({(i+1)*5}s)")
+            return True
+        print(".", end="", flush=True)
+    print(" FAILED")
+    return False
+
+
+def stop_research_server(bench_config: dict):
+    """Stop the research LLM server."""
+    remote_user = bench_config.get("BENCH_REMOTE_USER", "root")
+    remote_host = bench_config.get("BENCH_REMOTE_HOST", "")
+    port = bench_config.get("BENCH_SERVER_PORT", "8099")
+    remote = f"{remote_user}@{remote_host}"
+    subprocess.run(
+        ["ssh", remote, f"fuser -k {port}/tcp 2>/dev/null"],
+        capture_output=True,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Main loop
 # ---------------------------------------------------------------------------
@@ -455,13 +522,21 @@ def main():
 
         print(f"\n[*] Step {step + 1}/{args.budget} — querying research LLM...")
 
+        # Start server for research LLM query
+        if not start_research_server(bench_config, script_dir):
+            print("[!] Failed to start research LLM server")
+            break
+
         try:
             response = query_llm(research_host, research_port,
                                  system_msg, user_msg)
             proposal = parse_response(response)
         except Exception as e:
             print(f"[!] LLM error: {e}")
+            stop_research_server(bench_config)
             break
+        finally:
+            stop_research_server(bench_config)
 
         print(f"  Analysis: {proposal.get('analysis', '')}")
         print(f"  Reasoning: {proposal.get('reasoning', '')}")
